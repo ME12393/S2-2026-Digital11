@@ -66,7 +66,16 @@ function draw() {
     drawGaugeWidget(300, 120, "pH Level", ph, 6.0, 8.5);
     drawGaugeWidget(550, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
     drawGaugeWidget(50, 300, "ammonium ion (nh4)", nh4, 0.00, 0.05)
-
+    if (ph >=8.5) {
+      if (frameCount % 60 < 30) {
+      fill('red')
+      rect(0, 0, 800, 500)
+      fill('white')
+      textSize(50)
+      textAlign(CENTER, CENTER)
+      text("PH WARNING, PH TOO HIGH", 400, 250)
+          }
+      }
   } else {
     // Loading State
     fill(255, 100, 100);
@@ -109,5 +118,4 @@ function drawGaugeWidget(x, y, label, val, minVal, maxVal) {
   textSize(28);
   text(val, x + 15, y + 50);
 }
-
 
