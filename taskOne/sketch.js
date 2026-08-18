@@ -17,8 +17,12 @@ function preload() {
   aquariumData = loadJSON(endpoint, onDataLoaded, onError);
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
 function setup() {
-  createCanvas(800, 500);
+  createCanvas(windowWidth, windowHeight);
   
   // Refresh live data every 5 minutes (300,000 ms)
   if (!USE_OFFLINE_MOCK) {
@@ -45,7 +49,7 @@ function draw() {
   fill(255);
   textSize(24);
   textAlign(LEFT, TOP);
-  text("Fish Environment Dashboard", 30, 30);
+  text("Fish Environment Dashboard", width * 0.04, height * 0.05);
 
   // Display connection status
   textSize(12);
@@ -73,7 +77,7 @@ function draw() {
       fill('white')
       textSize(50)
       textAlign(CENTER, CENTER)
-      text("PH WARNING, PH TOO HIGH", 400, 250)
+      text("PH WARNING, PH TOO HIGH", width*0.04 , height * 0.05)
           }
       }
   } else {
