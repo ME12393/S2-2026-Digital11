@@ -39,7 +39,7 @@ function onError(err) {
 }
 
 function draw() {
-  background(20, 30, 45); // Dark blue aquarium background
+  background(15, 30, 45); // Dark blue aquarium background
 
   // 1. Draw Title Header
   fill(255);
