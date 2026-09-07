@@ -43,18 +43,31 @@ function onError(err) {
 }
 
 function draw() {
-  background(15, 30, 45); // Dark blue aquarium background
+  background(8, 15, 22); 
 
-  // 1. Draw Title Header
+  fill(10, 30, 45, 80);
+  noStroke();
+  rect(0, 0, width, height);
+
+// 1. Draw Title Header
   fill(255);
-  textSize(24);
-  textAlign(LEFT, TOP);
-  text("Fish Environment Dashboard", width * 0.04, height * 0.05);
+  noStroke();
 
-  // Display connection status
-  textSize(12);
-  fill(150, 200, 255);
-  text("Last updated: " + (lastUpdated || "Loading..."), 30, 65);
+  textSize(32);
+  textAlign(LEFT, TOP);
+  text("FISH ENVIRONMENT", width * 0.04, height * 0.04);
+
+  // Live status
+  fill(120, 210, 230);
+  textSize(13);
+  textAlign(RIGHT, TOP);
+  text("● LIVE", width * 0.96, height * 0.04);
+
+  fill(150);
+  textSize(11);
+  text("Updated: " + (lastUpdated || "Loading..."), width * 0.96, height * 0.04 + 20);
+
+  textAlign(LEFT, TOP);
 
   // 2. Render Dashboard Graphics
   if (aquariumData) {
@@ -90,23 +103,53 @@ function draw() {
 
 // Example Widget Function: Temperature Card
 function drawTempWidget(x, y, tempVal) {
-  // Background Card
-  fill(35, 48, 68);
-  stroke(60, 80, 110);
-  rect(x, y, 200, 150, 10);
 
-  // Label
+
+  tempVal = Number(tempVal);
+
+  // Card
+  fill(18, 28, 38);
+  stroke(45, 75, 90);
+  strokeWeight(2);
+  rect(x, y, 240, 170, 12);
+
+  // Title
   noStroke();
-  fill(180, 200, 220);
-  textSize(14);
-  text("Water Temp", x + 15, y + 15);
+  fill(180, 200, 210);
+  textSize(15);
+  textAlign(LEFT, TOP);
+  text("WATER TEMPERATURE", x + 18, y + 18);
 
-  // Value Display
+  // Temperature value
   fill(100, 220, 255);
-  textSize(36);
-  text(tempVal + "°C", x + 15, y + 50);
-}
+  textSize(40);
+  text(tempVal.toFixed(2) + "°C", x + 18, y + 50);
 
+  // Gauge background
+  fill(40, 50, 55);
+  rect(x + 18, y + 105, 204, 18, 9);
+
+  // Gauge fill
+
+  let gaugeValue = map(tempVal, 15, 35, 0, 204);
+  gaugeValue = constrain(gaugeValue, 0, 204);
+
+  // Change colour based on temperature
+  if (tempVal < 20 || tempVal > 30) {
+    fill(255, 70, 70);       // RED - danger
+  } else if (tempVal < 22 || tempVal > 28) {
+    fill(255, 170, 60);      // ORANGE - caution
+  } else {
+    fill(100, 220, 150);     // GREEN - normal
+  }
+
+rect(x + 18, y + 105, gaugeValue, 18, 9);
+
+  // Status
+  fill(100, 220, 150);
+  textSize(13);
+  text("● NORMAL", x + 18, y + 140);
+}
 // Example Widget Function: Simple Bar Gauge
 function drawGaugeWidget(x, y, label, val, minVal, maxVal) {
   fill(35, 48, 68);
@@ -122,4 +165,3 @@ function drawGaugeWidget(x, y, label, val, minVal, maxVal) {
   textSize(28);
   text(val, x + 15, y + 50);
 }
-
