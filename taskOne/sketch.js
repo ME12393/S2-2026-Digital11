@@ -80,10 +80,11 @@ function draw() {
 
     // Call your custom graphic widgets
     drawTempWidget(50, 120, temp);
-    drawGaugeWidget(300, 120, "pH Level", ph, 6.0, 8.5);
-    drawGaugeWidget(550, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
-    drawGaugeWidget(50, 300, "ammonium ion (nh4)", nh4, 0.00, 0.05)
-    if (ph >=8.5) {
+    drawTempWidget(50, 120, temp);
+    drawGaugeWidget(310, 120, "pH Level", ph, 6.0, 8.5);
+    drawGaugeWidget(570, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
+    drawGaugeWidget(50, 310, "Ammonium Ion (NH4)", nh4, 0.00, 0.05);
+        if (ph >=8.5) {
       if (frameCount % 60 < 30) {
       fill('red')
       rect(0, 0, 800, 500)
@@ -125,25 +126,68 @@ function drawTempWidget(x, y, tempVal) {
   textSize(40);
   text(tempVal.toFixed(2) + "°C", x + 18, y + 50);
 
-  // Gauge background
-  fill(40, 50, 55);
-  rect(x + 18, y + 105, 204, 18, 9);
+  // Gauge
+  let gaugeX = x + 18;
+  let gaugeY = y + 105;
+  let gaugeWidth = 204;
+  let gaugeHeight = 18;
 
-  // Gauge fill
+  // Gauge zones
+  let greenStart = map(22, 15, 35, 0, gaugeWidth);
+  let orangeStart = map(28, 15, 35, 0, gaugeWidth);
+  let redStart = map(30, 15, 35, 0, gaugeWidth);
 
-  let gaugeValue = map(tempVal, 15, 35, 0, 204);
-  gaugeValue = constrain(gaugeValue, 0, 204);
+ // Gauge background
+fill(40, 50, 55);
+rect(gaugeX, gaugeY, gaugeWidth, gaugeHeight, 9);
 
-  // Change colour based on temperature
-  if (tempVal < 20 || tempVal > 30) {
-    fill(255, 70, 70);       // RED - danger
-  } else if (tempVal < 22 || tempVal > 28) {
-    fill(255, 170, 60);      // ORANGE - caution
-  } else {
-    fill(100, 220, 150);     // GREEN - normal
-  }
+  // Green zone
+  fill(100, 220, 150);
+  rect(
+    gaugeX,
+    gaugeY,
+    greenStart,
+    gaugeHeight
+  );
 
-rect(x + 18, y + 105, gaugeValue, 18, 9);
+  // Orange zone
+  fill(255, 170, 60);
+  rect(
+    gaugeX + greenStart,
+    gaugeY,
+    orangeStart - greenStart,
+    gaugeHeight
+  );
+
+  // Red zone
+  fill(255, 70, 70);
+  rect(
+    gaugeX + orangeStart,
+    gaugeY,
+    gaugeWidth - orangeStart,
+    gaugeHeight
+  );
+
+  // Restore rounded ends
+  fill(100, 220, 150);
+  rect(gaugeX, gaugeY, 9, gaugeHeight, 9);
+
+  fill(255, 70, 70);
+  rect(
+    gaugeX + gaugeWidth - 9,
+    gaugeY,
+    9,
+    gaugeHeight,
+    9
+  );
+  // Current temperature position
+  let indicatorX = map(tempVal, 15, 35, gaugeX, gaugeX + gaugeWidth);
+  indicatorX = constrain(indicatorX, gaugeX, gaugeX + gaugeWidth);
+
+  // Indicator
+  fill(255);
+  noStroke();
+  circle(indicatorX, gaugeY + gaugeHeight / 2, 12);
 
   // Status
   fill(100, 220, 150);
@@ -152,16 +196,72 @@ rect(x + 18, y + 105, gaugeValue, 18, 9);
 }
 // Example Widget Function: Simple Bar Gauge
 function drawGaugeWidget(x, y, label, val, minVal, maxVal) {
-  fill(35, 48, 68);
-  stroke(60, 80, 110);
-  rect(x, y, 200, 150, 10);
 
+  // Card
+  fill(18, 28, 38);
+  stroke(45, 75, 90);
+  strokeWeight(2);
+  rect(x, y, 240, 170, 12);
+
+  // Title
   noStroke();
-  fill(180, 200, 220);
-  textSize(14);
-  text(label, x + 15, y + 15);
+  fill(180, 200, 210);
+  textSize(15);
+  textAlign(LEFT, TOP);
+  text(label.toUpperCase(), x + 18, y + 18);
 
+  // Value
+  fill(100, 220, 255);
+  textSize(40);
+  text(Number(val).toFixed(2), x + 18, y + 50);
+
+  // Gauge
+  let gaugeX = x + 18;
+  let gaugeY = y + 105;
+  let gaugeWidth = 204;
+  let gaugeHeight = 18;
+
+  // Position of current value
+  let indicatorX = map(val, minVal, maxVal, gaugeX, gaugeX + gaugeWidth);
+  indicatorX = constrain(indicatorX, gaugeX, gaugeX + gaugeWidth);
+
+  // Gauge background
+  fill(40, 50, 55);
+  rect(gaugeX, gaugeY, gaugeWidth, gaugeHeight, 9);
+
+  // Current value fill
+  if (val >= minVal && val <= maxVal) {
+    fill(100, 220, 150);
+  } else {
+    fill(255, 70, 70);
+  }
+
+  rect(
+    gaugeX,
+    gaugeY,
+    indicatorX - gaugeX,
+    gaugeHeight
+  );
+
+  // Indicator
   fill(255);
-  textSize(28);
-  text(val, x + 15, y + 50);
+  noStroke();
+  circle(indicatorX, gaugeY + gaugeHeight / 2, 12);
+
+  // Status
+  if (val >= minVal && val <= maxVal) {
+
+  fill(100, 220, 150);
+  textSize(13);
+  textAlign(LEFT, TOP);
+  text("● NORMAL", x + 18, y + 140);
+
+} else {
+
+  fill(255, 70, 70);
+  textSize(13);
+  textAlign(LEFT, TOP);
+  text("● WARNING", x + 18, y + 140);
+
+}
 }
