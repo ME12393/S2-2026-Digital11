@@ -10,6 +10,20 @@ const USE_OFFLINE_MOCK = false;
 
 let aquariumData = null;
 let lastUpdated = "";
+let bubbles = [];
+let bgColour = "#07141C";
+let cardColour = "#12232D";
+let borderColour = "#284653";
+let mainText = "#F0F5F7";
+let secondaryText = "#9FB5BE";
+let accentColour = "#55D6E8";
+let normalColour = "#64DC96";
+let cautionColour = "#FFAA3C";
+let warningColour = "#FF4646";
+let historyChart;
+let tempHistory = [];
+let timeHistory = [];
+
 
 function preload() {
   // Load initial data before setup() runs
@@ -21,16 +35,116 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  
+
+  for (let i = 0; i < 25; i++) {
+    bubbles.push({
+      x: random(width),
+      y: random(height),
+      size: random(3, 10),
+      speed: random(0.3, 1),
+      opacity: random(30, 80)
+    });
+  }
+
   // Refresh live data every 5 minutes (300,000 ms)
   if (!USE_OFFLINE_MOCK) {
     setInterval(() => {
       loadJSON(PROXY_URL, onDataLoaded, onError);
     }, 300000);
   }
+
+  createHistoryChart();
 }
+
+
+function createHistoryChart() {
+  const ctx = document.getElementById("history-chart");
+
+  historyChart = new Chart(ctx, {
+    type: "line",
+
+    data: {
+      labels: timeHistory,
+
+      datasets: [{
+        label: "Water Temperature",
+        data: tempHistory,
+        tension: 0.3,
+
+        borderColor: "#55D6E8",
+        backgroundColor: "rgba(85, 214, 232, 0.15)",
+        borderWidth: 3,
+
+        pointBackgroundColor: "#F0F5F7",
+        pointBorderColor: "#55D6E8",
+        pointRadius: 4,
+
+        fill: true
+      }]
+    },
+
+    options: {
+      responsive: true,
+
+      plugins: {
+        title: {
+          display: true,
+          text: "WATER TEMPERATURE HISTORY",
+          color: "#55D6E8",
+          font: {
+            size: 18,
+            weight: "bold"
+          }
+        },
+
+        legend: {
+          labels: {
+            color: "#F0F5F7"
+          }
+        }
+      },
+
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: "Temperature (°C)",
+            color: "#9FB5BE"
+          },
+
+          ticks: {
+            color: "#F0F5F7"
+          },
+
+          grid: {
+            color: "rgba(159, 181, 190, 0.15)"
+          }
+        },
+
+        x: {
+          title: {
+            display: true,
+            text: "Time",
+            color: "#9FB5BE"
+          },
+
+          ticks: {
+            color: "#F0F5F7"
+          },
+
+          grid: {
+            color: "rgba(159, 181, 190, 0.10)"
+          }
+        }
+      }
+    }
+  });
+}
+
 
 function onDataLoaded(data) {
   aquariumData = data;
@@ -43,14 +157,14 @@ function onError(err) {
 }
 
 function draw() {
-  background(8, 15, 22); 
+  background(bgColour); 
 
-  fill(10, 30, 45, 80);
+  fill("#0A2633");
   noStroke();
   rect(0, 0, width, height);
-
+  drawBubbles();
 // 1. Draw Title Header
-  fill(255);
+  fill(mainText);
   noStroke();
 
   textSize(32);
@@ -58,12 +172,12 @@ function draw() {
   text("FISH ENVIRONMENT", width * 0.04, height * 0.04);
 
   // Live status
-  fill(120, 210, 230);
+  fill(accentColour);
   textSize(13);
   textAlign(RIGHT, TOP);
   text("● LIVE", width * 0.96, height * 0.04);
 
-  fill(150);
+  fill(secondaryText);
   textSize(11);
   text("Updated: " + (lastUpdated || "Loading..."), width * 0.96, height * 0.04 + 20);
 
@@ -79,7 +193,6 @@ function draw() {
     let nh4 = aquariumData[0].exps.nh4.curr;
 
     // Call your custom graphic widgets
-    drawTempWidget(50, 120, temp);
     drawTempWidget(50, 120, temp);
     drawGaugeWidget(310, 120, "pH Level", ph, 6.0, 8.5);
     drawGaugeWidget(570, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
@@ -109,20 +222,20 @@ function drawTempWidget(x, y, tempVal) {
   tempVal = Number(tempVal);
 
   // Card
-  fill(18, 28, 38);
-  stroke(45, 75, 90);
+  fill(cardColour);
+  stroke(borderColour);
   strokeWeight(2);
   rect(x, y, 240, 170, 12);
 
   // Title
   noStroke();
-  fill(180, 200, 210);
+  fill(secondaryText);
   textSize(15);
   textAlign(LEFT, TOP);
   text("WATER TEMPERATURE", x + 18, y + 18);
 
   // Temperature value
-  fill(100, 220, 255);
+  fill(accentColour);
   textSize(40);
   text(tempVal.toFixed(2) + "°C", x + 18, y + 50);
 
@@ -142,7 +255,7 @@ fill(40, 50, 55);
 rect(gaugeX, gaugeY, gaugeWidth, gaugeHeight, 9);
 
   // Green zone
-  fill(100, 220, 150);
+  fill(normalColour);
   rect(
     gaugeX,
     gaugeY,
@@ -264,4 +377,30 @@ function drawGaugeWidget(x, y, label, val, minVal, maxVal) {
   text("● WARNING", x + 18, y + 140);
 
 }
+}
+
+function drawBubbles() {
+
+  noFill();
+  strokeWeight(1);
+
+  for (let bubble of bubbles) {
+
+    stroke(100, 220, 255, bubble.opacity);
+
+    circle(
+      bubble.x,
+      bubble.y,
+      bubble.size
+    );
+
+    // Move bubble upward
+    bubble.y -= bubble.speed;
+
+    // Reset when it reaches the top
+    if (bubble.y < -bubble.size) {
+      bubble.y = height + bubble.size;
+      bubble.x = random(width);
+    }
+  }
 }

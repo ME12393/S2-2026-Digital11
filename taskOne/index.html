@@ -6,6 +6,10 @@
   <title>Aquarium Data Dashboard</title>
   <!-- Load p5.js library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
   <style>
     body {
       margin: 0;
@@ -16,11 +20,25 @@
       height: 100vh;
       background-color: #121212;
       font-family: Arial, sans-serif;
+
+      #history-container {
+  position: absolute;
+  left: 750px;
+  top: 350px;
+  width: 780px;
+  height: 250px;
+}
     }
   </style>
 </head>
 <body>
   <!-- p5.js canvas attaches here -->
+
+  <!-- Historical data chart -->
+  <div id="history-container">
+    <canvas id="history-chart"></canvas>
+  </div>
+
   <script src="sketch.js"></script>
 </body>
 </html>
