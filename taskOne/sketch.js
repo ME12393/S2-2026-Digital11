@@ -149,6 +149,21 @@ function createHistoryChart() {
 function onDataLoaded(data) {
   aquariumData = data;
   lastUpdated = new Date().toLocaleTimeString();
+
+  let temp = Number(data[0].exps.temperature.curr);
+
+  tempHistory.push(temp);
+  timeHistory.push(lastUpdated);
+
+  if (tempHistory.length > 30) {
+    tempHistory.shift();
+    timeHistory.shift();
+  }
+
+  if (historyChart) {
+    historyChart.update();
+  }
+
   console.log("Data refreshed successfully:", data);
 }
 
