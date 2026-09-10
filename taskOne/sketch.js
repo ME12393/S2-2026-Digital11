@@ -209,9 +209,9 @@ function draw() {
 
     // Call your custom graphic widgets
     drawTempWidget(50, 120, temp);
-    drawGaugeWidget(310, 120, "pH Level", ph, 6.0, 8.5);
-    drawGaugeWidget(570, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
-    drawGaugeWidget(50, 310, "Ammonium Ion (NH4)", nh4, 0.00, 0.05);
+    drawGaugeWidget(310, 120, "pH Level", ph);
+    drawGaugeWidget(570, 120, "Ammonia (NH3)", nh3);
+    drawGaugeWidget(50, 310, "Ammonium Ion (NH4)", nh4);
         if (ph >=8.5) {
       if (frameCount % 60 < 30) {
       fill('red')
